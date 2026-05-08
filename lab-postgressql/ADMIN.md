@@ -142,7 +142,7 @@ az role assignment create --assignee "<your-azure-ad-object-id>" --role "Azure A
 | `POSTGRES_HOST` | Azure Portal > PostgreSQL Resource > Overview > Server name |
 | `POSTGRES_PORT` | `5432` |
 | `POSTGRES_DB` | `shopease` |
-| `POSTGRES_USER` | The admin username you chose |
+| `POSTGRES_USER` | pgadmin |
 | `POSTGRES_PASSWORD` | The admin password you chose |
 
 ## Authenticate with Azure
@@ -162,7 +162,7 @@ az login
 ### Seed the PostgreSQL Database
 
 ```bash
-python setup/seed_db.py
+python lab-postgressql/setup/seed_db.py
 ```
 
 Expected output:
@@ -183,7 +183,7 @@ Sample rows:
 ### Create the AI Search Index & Upload Policy Documents
 
 ```bash
-python setup/create_index.py
+python lab-postgressql/setup/create_index.py
 ```
 
 Expected output:
@@ -211,7 +211,7 @@ Index contents:
 ### Start the Agent
 
 ```bash
-python chat.py
+python lab-postgressql/chat.py
 ```
 
 You will see the startup banner with a list of demo order IDs and sample questions.
