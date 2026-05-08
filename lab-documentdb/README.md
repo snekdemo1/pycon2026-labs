@@ -38,7 +38,6 @@ Browse the raw data the agent is working with — cruise ships and destinations 
 Spin up the FastAPI server that hosts the travel agent.
 
 1. In the terminal, run the command: `python lab-documentdb/api/app.py`
-1. Start the FastAPI server: `python app.py`
 1. The server starts at `http://127.0.0.1:8000`. Open the interactive API docs in your browser and add `/docs` at the end of the URL (ex: https://bug-free-waffle-4wq6vxg7v627jp-8000.app.github.dev/docs).
 
 ---
@@ -100,11 +99,11 @@ Put the agent to work by booking a cruise — it'll ask for the details it needs
 
 ## Review Conversation History (1.5 min)
 
-1. In the editor, open the **Azure** extension.
-1. Expand **[tbd tenant name]** > **Azure DocumentDB** > **[tbd resource name]** > **travel**.
-1. Expand the **history** > **Documents** to view the conversation history stored within Azure DocumentDB.
+You can view the chat discussion history with `mongosh`.
 
-> 💡 Select a document and click the eye icon to view the selected document.
+1. In the terminal, run the command: mongosh "<mongo connection string goes here - to be replaced before labs go live>".
+1. Next, run the command: `use travel`
+1. Next, run the command: `db.history.find().sort({_id:-1}).limit(20)`
 
 ---
 
@@ -115,7 +114,7 @@ Take a moment to connect what you just did to the Azure DocumentDB capabilities 
 - **Vector search** — the agent matched your natural language query to relevant cruises using semantic similarity over embeddings
 - **Document store (reads)** — the agent retrieved itinerary details for a specific ship from a stored document
 - **Document store (writes)** — the agent wrote your booking record back to DocumentDB
-- **Session history** — every turn of your conversation was persisted in the `travel.history` collection, so the agent remembered context across messages
+- **Session history** — every turn of your conversation was persisted, so the agent remembered context across messages
 
 Azure DocumentDB handled all four of these without any additional infrastructure!
 
