@@ -11,7 +11,7 @@
 
 ## Create resources & deploy models
 
-Ensure that all resources are created in the Azure tenant that will be used for the labs. Verify you are signed into the correct tenant before proceeding with resource creation.
+> 💡 Ensure that all resources are created in the Azure tenant that will be used for the labs. Verify you are signed into the correct tenant before proceeding with resource creation.
 
 ### Azure DocumentDB Cluster
 

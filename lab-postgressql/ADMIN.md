@@ -12,18 +12,26 @@
 
 ## Create resources & deploy models
 
+> 💡 Ensure that all resources are created in the Azure tenant that will be used for the labs. Verify you are signed into the correct tenant before proceeding with resource creation.
+
 You will create resources via the Azure CLI.
 
 ### Create an Azure Resource Group
 
 ```bash
+# For BAMI tenants
+az login --tenant <your BAMI tenant>.onmicrosoft.com --use-device-code
+
+# For non-BAMI tenants
 az login
+
+# Run this command for BAMI/non-BAMI tenants
 az group create --name rg-shopeasy-lab --location westus
 ```
 
 ### Provision Azure PostgreSQL Flexible Server
 
-**Note:** Be sure to replace the `<insert password>` placeholder.
+> 💡 **Note:** Be sure to replace the `<insert password>` placeholder.
 
 ```bash
 az postgres flexible-server create --resource-group rg-shopeasy-lab --name shopeasy-pg --location westus --admin-user pgadmin --admin-password "<insert password>" --sku-name Standard_B1ms --tier Burstable --version 16 --public-access 0.0.0.0
@@ -35,7 +43,9 @@ Then create the database:
 az postgres flexible-server db create --resource-group rg-shopeasy-lab --server-name shopeasy-pg --database-name shopease
 ```
 
-To mitigate firewall connection errors, add your IP. You can get our IP address by running the command: `curl ifconfig.me`.
+To mitigate firewall connection errors, add your IP.
+
+> 💡 **Note:** Be sure to replace the `<your-ip>` placeholders. You can get our IP address by running the command: `curl ifconfig.me`.
 
 ```bash
 az postgres flexible-server firewall-rule create --resource-group rg-shopeasy-lab --name shopeasy-pg --rule-name AllowMyIP --start-ip-address <your-ip> --end-ip-address <your-ip>
@@ -77,17 +87,19 @@ az search admin-key show --resource-group rg-shopeasy-lab --service-name shopeas
 
 1. Navigate to [ai.azure.com](https://ai.azure.com).
 1. At the top of the page, select the **New Foundry** toggle to enable the new Foundry portal experience.
-1. Create a new project via the pop-up that loads on launch.
-1. In the **Create project** window, select **Microsoft Foundry resource**.
-1. Name the project `shopeasy-lab`.
+1. In the **Select a project to continue** window, click the drop-down and select **Create a new project**.
+1. In the **Create a project** window, name the project `shopeasy-lab`.
+1. In the **Advanced options**, replace the **Microsoft Foundry resource** name with a domain name that's available.
+1. In the **Advanced options**, for **Region**, select **West US**.
 1. Click **Create**.
 
 ### Deloy the gpt-4o model
 
-1. In the Foundry portal, navigate to the **Model catalog**.
-1. In the **Model catalog** search for `gpt-5.4`.
-1. On the **gpt-5.4** page, click **Use this model** to deploy the model.
-1. In the **Deploy gpt-5.4** window, click **Deploy**.
+1. In the **New Foundry** portal, navigate to **Discover**.
+1. Select **Models**.
+1. Search for `gpt-5.4`.
+1. On the **gpt-5.4** page, click **Deploy**.
+1. Select **Default settings**.
 
 ## Grant yourself the Contributor role on the Foundry project
 
@@ -101,11 +113,15 @@ az ad signed-in-user show --query id -o tsv
 
 ### Get the resource ID
 
+> 💡 **Note:** Be sure to replace the `<your Microsoft Foundry resource name>` placeholders.
+
 ```bash
-az resource show --resource-group rg-shopeasy-lab --resource-type "Microsoft.CognitiveServices/accounts" --name shopeasy-lab-resource --query id -o tsv
+az resource show --resource-group rg-shopeasy-lab --resource-type "Microsoft.CognitiveServices/accounts" --name <your Microsoft Foundry resource name> --query id -o tsv
 ```
 
 ### Assign the role
+
+> 💡 **Note:** Be sure to replace the `<your-azure-ad-object-id` and `<resource-id>` placeholders.
 
 ```bash
 az role assignment create --assignee "<your-azure-ad-object-id>" --role "Azure AI Developer" --scope "<resource-id>"
@@ -134,6 +150,10 @@ az role assignment create --assignee "<your-azure-ad-object-id>" --role "Azure A
 This sets up `DefaultAzureCredential` used by the agent to call the Foundry model.
 
 ```bash
+# For BAMI tenants
+az login --tenant <your BAMI tenant>.onmicrosoft.com --use-device-code
+
+# For non-BAMI tenants
 az login
 ```
 
