@@ -21,12 +21,12 @@ Before running the agent, take a look at the three tools it uses to read from an
 
 ---
 
-## View the Stored Documents in the Azure DocumentDB Collections (2 min)
+## View the Stored Documents in the Azure DocumentDB Collections (3 min)
 
 Browse the raw data the agent is working with — cruise ships and destinations already loaded into Azure DocumentDB.
 
 1. In the editor, open the **Azure** extension.
-1. Expand **[tbd tenant name]** > **Azure DocumentDB** > **[tbd resource name]** > **travel**.
+1. Expand **PyCon** > **Azure DocumentDB** > **pyconus2026** > **travel**.
 1. Select **documents** within the **destinations** and **ships**  collections to view the documents stored within Azure DocumentDB. **Documents** in the **ships** collection include vector embedding arrays used for similarity search.
 
 > 💡 Select a document and click the eye icon to view the selected document.
@@ -38,7 +38,10 @@ Browse the raw data the agent is working with — cruise ships and destinations 
 Spin up the FastAPI server that hosts the travel agent.
 
 1. In the terminal, run the command: `python lab-documentdb/api/app.py`
-1. The server starts at `http://127.0.0.1:8000`. Open the interactive API docs in your browser and add `/docs` at the end of the URL (ex: https://bug-free-waffle-4wq6vxg7v627jp-8000.app.github.dev/docs).
+1. Start the FastAPI server: `python app.py`
+1. The server starts at `http://127.0.0.1:8000`. **CTRL + Click** the link to open the interactive API docs in your browser and add `/docs` at the end of the URL (ex: https://bug-free-waffle-4wq6vxg7v627jp-8000.app.github.dev/docs).
+
+> 💡 Copy + pasting `http://127.0.0.1:8000` will result in an error. Be sure to **CTRL + Click** as stated. Doing so routes to the proper URL from the Codespace.
 
 ---
 
@@ -66,7 +69,7 @@ Ask the agent about travel destinations and cruise ships — each response is gr
       "session_id": "<your-session-id>"
     }
     ```
-1. Click **Execute** and review the response. The agent returns a summary of activities to do in Barbados, sourced from a **vector similarity search** against the `travel.destinations` collection in Azure DocumentDB. If you look in the terminal, you will see output for the [TBD] tool call.
+1. Click **Execute** and review the response. The agent returns a summary of activities to do in Barbados, sourced from documents in the `travel.destinations` collection in Azure DocumentDB. If you look in the terminal, you will see output for the `vacation_lookup` tool call.
 1. Update the request body, substituting your session ID:
 
     ```json
@@ -76,11 +79,11 @@ Ask the agent about travel destinations and cruise ships — each response is gr
     }
     ```
 
-1. Click **Execute** and review the response. The agent returns a proposed itinerary, sourced from a **vector similarity search** against the `travel.ships` collection in Azure DocumentDB.
+1. Click **Execute** and review the response. The agent returns a proposed itinerary, sourced from itinerary documents in Azure DocumentDB after looking up the named ship in the `travel.ships` collection and retrieving matching records from the `travel.itinerary` collection.
 
 ---
 
-## Book a Cruise (1 min)
+## Book a Cruise (1.5 min)
 
 Put the agent to work by booking a cruise — it'll ask for the details it needs and write the booking record to DocumentDB.
 
@@ -97,16 +100,6 @@ Put the agent to work by booking a cruise — it'll ask for the details it needs
 
 ---
 
-## Review Conversation History (1.5 min)
-
-You can view the chat discussion history with `mongosh`.
-
-1. In the terminal, run the command: mongosh "<mongo connection string goes here - to be replaced before labs go live>".
-1. Next, run the command: `use travel`
-1. Next, run the command: `db.history.find().sort({_id:-1}).limit(20)`
-
----
-
 ## Reflection
 
 Take a moment to connect what you just did to the Azure DocumentDB capabilities that made it possible.
@@ -114,7 +107,7 @@ Take a moment to connect what you just did to the Azure DocumentDB capabilities 
 - **Vector search** — the agent matched your natural language query to relevant cruises using semantic similarity over embeddings
 - **Document store (reads)** — the agent retrieved itinerary details for a specific ship from a stored document
 - **Document store (writes)** — the agent wrote your booking record back to DocumentDB
-- **Session history** — every turn of your conversation was persisted, so the agent remembered context across messages
+- **Session history** — every turn of your conversation was persisted in the `travel.history` collection, so the agent remembered context across messages
 
 Azure DocumentDB handled all four of these without any additional infrastructure!
 
