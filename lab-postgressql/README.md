@@ -84,7 +84,7 @@ Dig into the two tool functions that power the agent's data access and see exact
     `asyncpg` sends the query and the parameter separately. the database engine
     never sees them concatenated, making SQL injection impossible.
 
-1. `fetch_return_policy` (line ~138)
+1. `fetch_return_policy` (line ~136)
     ```python
     embedding = await _embed(search_text)          # 1536-dim vector via Azure OpenAI
 
