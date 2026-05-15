@@ -11,7 +11,7 @@ Ever wonder what's happening when an AI agent "remembers" things? Run this trave
 Before running the agent, take a look at the three tools it uses to read from and write to Azure DocumentDB.
 
 1. In the **Explorer** of the editor, navigate to **lab-documentdb** > **api** > **service** > **TravelAgentTools.py**.
-1. View what each tool does: 
+1. View what each tool does:
 
   | Tool | What it does |
   |---|---|
@@ -21,27 +21,14 @@ Before running the agent, take a look at the three tools it uses to read from an
 
 ---
 
-## View the Stored Documents in the Azure DocumentDB Collections (3 min)
-
-Browse the raw data the agent is working with — cruise ships and destinations already loaded into Azure DocumentDB.
-
-1. In the editor, open the **Azure** extension.
-1. Expand **PyCon** > **Azure DocumentDB** > **pyconus2026** > **travel**.
-1. Select **documents** within the **destinations** and **ships**  collections to view the documents stored within Azure DocumentDB. **Documents** in the **ships** collection include vector embedding arrays used for similarity search.
-
-> 💡 Select a document and click the eye icon to view the selected document.
-
----
-
 ## Start the API (1 min)
 
 Spin up the FastAPI server that hosts the travel agent.
 
 1. In the terminal, run the command: `python lab-documentdb/api/app.py`
-1. Start the FastAPI server: `python app.py`
-1. The server starts at `http://127.0.0.1:8000`. **CTRL + Click** the link to open the interactive API docs in your browser and add `/docs` at the end of the URL (ex: https://bug-free-waffle-4wq6vxg7v627jp-8000.app.github.dev/docs).
+1. In the terminal, **CTRL + Click**  `http://127.0.0.1:8000` to open the interactive API docs in your browser and add `/docs` at the end of the URL.
 
-> 💡 Copy + pasting `http://127.0.0.1:8000` will result in an error. Be sure to **CTRL + Click** as stated. Doing so routes to the proper URL from the Codespace.
+> 💡 Copy + pasting `http://127.0.0.1:8000` will result in an error. Be sure to **CTRL + Click** via the link in the terminal as stated. Doing so routes to the proper URL from the Codespace.
 
 ---
 
@@ -115,4 +102,4 @@ Azure DocumentDB handled all four of these without any additional infrastructure
 
 ## 🎟️ Congratulations!
 
-Collect your ticket and present it at the prize booth for some swag!
+Let our staff know that you've completed the lab so that you can collect your swag!

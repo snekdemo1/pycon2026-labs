@@ -4,12 +4,6 @@ Welcome! This repo contains a collection of hands-on labs built for PyCon 2026. 
 
 ---
 
-## For Administrators
-
-**Important:** Before running these labs with participants, complete all setup instructions available in the **ADMIN.md** files for `lab-documentdb` and `lab-postgressql`. This includes provisioning Azure resources, configuring authentication, and verifying connectivity for all required services.
-
----
-
 ## Getting Started
 
 These labs are built to run in a **GitHub Codespace**. All dependencies, extensions, and environment configuration are pre-installed. To get started:
@@ -49,19 +43,18 @@ You've inherited a broken Python quiz game. Use **GitHub Copilot CLI** to docume
 
 ---
 
-### Customer Support Agent with Azure PostgreSQL & AI Search
+### Semantic Note Search with Azure PostgreSQL
 
 **Folder:** `lab-postgressql/`
 
-Run a customer support agent that queries a live **Azure PostgreSQL** database and a **hybrid vector search index** to answer return policy questions. Trace the two-tool flow — a parameterized SQL lookup followed by a RAG search — and see how the agent synthesizes both into a grounded response.
+Build and interact with a semantic search app that uses Azure PostgreSQL for vector search, structured note storage, and semantic retrieval. Explore how the app finds notes by meaning instead of exact keywords by generating embeddings with Microsoft Foundry and retrieving similar notes from a PostgreSQL database.
 
 **Technologies:**
-- Python / asyncpg
-- Azure PostgreSQL
-- Azure AI Search (hybrid BM25 + vector cosine search)
+- Python
+- Azure Database for PostgreSQL Flexible Server
+- pgvector (vector similarity search)
 - Microsoft Foundry
-- Microsoft Agent Framework
-- Azure OpenAI
+- Embedding moel (text-embedding-3-small)
 
 ---
 
@@ -72,3 +65,9 @@ Each lab has a `reset.sh` script that restores it to its starting state. To rese
 ```bash
 bash reset-all.sh
 ```
+
+## For Administrators
+
+**Important:** Before running these labs with participants, complete all setup instructions available in the **ADMIN.md** files for `lab-documentdb` and `lab-postgressql`. This includes provisioning Azure resources, configuring authentication, and verifying connectivity for all required services.
+
+---

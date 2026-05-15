@@ -60,8 +60,7 @@ Now that the code is documented, switch Copilot to **plan** mode before asking i
     ```
 
     **Note**: You can execute a command in your local shell with the **!** command, bypassing Copilot.
-
-> ❓ Did all the tests pass? If not, which one failed, and why?
+1. Did all the tests pass? If not, which one failed, and why?
 
 ---
 
@@ -77,7 +76,7 @@ Let's now fix the bug in the `quiz.py` file.
     ! python -m pytest lab-ghcp-cli/test_quiz.py -v
     ```
 
-> All tests should pass. ✅
+1. Did all the tests pass? If not, ask GitHub Copilot to fix the bug.
 
 ---
 
@@ -88,6 +87,8 @@ Try taking the quiz! In a new terminal, run the command:
 ```bash
 python lab-ghcp-cli/quiz.py
 ```
+
+> 💡 Be sure to run this command in a new terminal, **NOT** in the GitHub Copilot CLI.
 
 ---
 
@@ -105,5 +106,4 @@ The workflow you just used, `Document → Plan → Test → Fix`, is the same lo
 
 ## 🎟️ Congratulations!
 
-Collect your ticket and present it at the prize booth for some swag!
-
+Let our staff know that you've completed the lab so that you can collect your swag!

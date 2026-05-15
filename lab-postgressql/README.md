@@ -1,144 +1,87 @@
-# Customer Support Agent with Microsoft Foundry, Microsoft Agent Framework, Azure PostgreSQL & Azure AI Search
+# Semantic Note Search with Azure PostgreSQL
 
-Query a PostgreSQL database and a vector search index in real time, then explore the code behind the SQL queries and hybrid RAG search that power an AI agent's responses.
+Build and interact with a semantic search app that uses Azure PostgreSQL for vector search, structured note storage, and semantic retrieval. Explore how the app finds notes by meaning instead of exact keywords by generating embeddings with Microsoft Foundry and retrieving similar notes from a PostgreSQL database.
 
 ---
 
-## Start the Agent (30 seconds)
+## Explore the sample notes (2 min)
 
-Launch the agent from your terminal to start an interactive customer support session.
+In the **Explorer** of the editor, navigate to **lab-postgressql** > **data** > **notes.json**.
 
-In the terminal, run the command `python lab-postgressql/chat.py`
+Notice that these notes are written naturally. There are no keywords intentionally added.
 
-You will see the startup banner with a list of demo order IDs and sample questions.
+## Run the semantic search app (1 min)
 
-## Watch the Full Flow (2 min)
+In the terminal, run the command: `python lab-postgressql/search_notes.py`
 
-See both tools fire in sequence as the agent resolves a real support request (a SQL lookup followed by a vector search) before synthesizing a final answer.
+The application will:
 
-Ask the agent about an electronics order:
+- Send your search query to Microsoft Foundry
+- Generate an embedding vector
+- Compare that vector against stored note vectors
+- Return the most similar notes
 
+## Search by meaning (1 min)
+
+In the terminal, enter: `vacation ideas`
+
+Notice that results appear even if those exact words don't exist in the notes. The system found related concepts instead.
+
+## Try additional searches (2 min)
+
+Try additional search queries in the termimal.
+
+```txt
+stress
+focus better
+health goals
 ```
-You: Can I return order ORD-007?
-```
 
-Watch the terminal output carefully. You will see **two tool calls** happen
-before the agent writes its answer:
+Once you are done, enter `Quit` into the terminal to exit the app.
 
-1. `[TOOL] lookup_order → SQL query`
-   - The query printed is parameterized (`WHERE order_id = $1`) — no SQL injection risk.
-   - The result JSON shows the `order_date` and `product_category`.
+## Add your own note (1 min)
 
-2. `[TOOL] fetch_return_policy → RAG / vector search`
-   - The search query is formed from the category name (`Electronics return policy refund`).
-   - The index is searched with *hybrid* mode: both keyword BM25 and vector cosine similarity.
-   - 3 policy chunks are returned and passed to the model.
+You can add your own note to the app and test whether semantic search can find it.
 
-3. The agent's final response synthesizes both pieces of information.
-
----
-
-## Test the Return Window Logic (2 min)
-
-Put the date-window logic to the test by trying orders on both sides of the 30-day return cutoff. The agent computes eligibility at runtime from live data, not hardcoded rules.
-
-1. Try an order that is **outside** the 30-day electronics window:
-
-    ```
-    You: I want to return order ORD-001.
+1. In the **Explorer** of the editor, navigate to **lab-postgressql** > **data** > **notes.json**.
+1. Add a new note:
+    ```JSON
+    {
+      "title":"<insert your title>",
+      "content":"<insert your note>"
+    }
     ```
 
-    `ORD-001` was delivered more than days ago. Notice how the agent correctly says
-    the order is outside the return window. It computed this from the `order_date`
-    returned by the SQL query and the window stated in the policy document.
+Right now this note exists only as text and it does not yet have an embedding.
 
-1. Try an order **within** the 30-day window:
+## Generate embeddings for the new note (1 min)
 
-    ```
-    You: What about order ORD-006?
-    ```
+Let's now generate embeddings for your new note!
 
-    `ORD-006` (AirPods Pro) was delivered 8 days ago, well within 30 days.
+1. In the terminal, run the command: `python lab-postgressql/seed_database.py`
+1. In the terminal, run the command: `python lab-postgressql/generate_embeddings.py`
 
----
+The embedding is now saved into the PostgreSQL `embedding` column.
 
-## Explore the Code (3 min)
+## Search again (2 min)
 
-Dig into the two tool functions that power the agent's data access and see exactly how parameterized queries and hybrid vector search are implemented.
+Let's now start up the app again and enter a word/phrase to search for your note.
 
-1. Open `tools.py` and look at two functions:
+1. In the terminal, run the command: `python lab-postgressql/search_notes.py`
+1. In the terminal, enter a phrase or word related to your new note.
 
-    `lookup_order` (line ~71)
-    ```python
-    row = await _pool.fetchrow(
-        """
-        SELECT o.order_id, o.order_date, o.product_name, o.product_category, ...
-        FROM   orders o
-        JOIN   customers c ON o.customer_id = c.customer_id
-        WHERE  o.order_id = $1   ← parameterized, safe from SQL injection
-        """,
-        oid,
-    )
-    ```
-    The `$1` placeholder is the asyncpg parameterized query syntax.
-    `asyncpg` sends the query and the parameter separately. the database engine
-    never sees them concatenated, making SQL injection impossible.
-
-1. `fetch_return_policy` (line ~136)
-    ```python
-    embedding = await _embed(search_text)          # 1536-dim vector via Azure OpenAI
-
-    vector_query = VectorizedQuery(
-        vector=embedding,
-        k_nearest_neighbors=3,
-        fields="content_vector",
-    )
-
-    results = await search_client.search(
-        search_text=search_text,                   # keyword side of hybrid search
-        vector_queries=[vector_query],             # vector side
-        select=["title", "content", "category"],
-        top=3,
-    )
-    ```
-    The hybrid search combines traditional keyword matching (BM25 scoring) with
-    vector cosine similarity. Documents whose text overlaps the query *and* whose
-    embedding vector is geometrically close both score well.
-
-1. Open `setup/create_index.py` to see how the policy document was split into
-chunks and uploaded with pre-computed embeddings.
-
----
-
-## Try Your Own Questions (2.5 min)
-
-Go off-script and see how the agent handles edge cases and variations it wasn't explicitly tested for. Each response is still grounded in live data from PostgreSQL and Azure AI Search.
-
-> 💡 **Order IDs:** All demo orders (ORD-001 through ORD-010) are defined in `setup/seed_db.py` if you want to browse products, categories, and delivery dates before chatting.
-
-Some ideas:
-
-- My laptop arrived broken. Order ORD-007. What can I do?
-- Is there a restocking fee if I return an opened TV?
-- I lost the box for my AirPods. Can I still return order ORD-006?
-- What orders do I have? (**Note**: the agent will ask for an Order ID)
-
----
+You should see your newly added note returned!
 
 ## Reflection
 
-Take a moment to connect what you just did to the services that made it possible.
+Think about what just happened:
 
-- **Parameterized SQL queries** — the agent looked up order details safely using `$1` placeholders, keeping user input and query logic completely separate to prevent SQL injection
-- **Hybrid RAG search** — the agent retrieved the right return policy by combining keyword matching (BM25) and vector cosine similarity against pre-computed embeddings in Azure AI Search
-- **Tool orchestration** — the agent decided on its own which tools to call and in what order, then synthesized both results into a single, coherent answer
-- **Policy as a knowledge base** — instead of hardcoding business rules, the agent retrieved policy chunks at runtime, meaning the policy can be updated without changing any agent code
-
-Together, Azure PostgreSQL and Azure AI Search gave the agent grounded, real-time access to structured data and unstructured documents — no hallucinated return windowso or hardcoded rules.
-
----
+- **Embeddings turned note content into vectors** so the app could compare meaning, not just exact words
+- **PostgreSQL stored both the notes and their embeddings** in one place, using `pgvector` for similarity search
+- **Your search query was embedded at runtime** and compared to stored note vectors using vector distance
+- **Semantic search surfaced related notes** even when your query used different wording than the original text
+- **Adding a new note required a new embedding** before it became searchable by meaning
 
 ## 🎟️ Congratulations!
 
-Collect your ticket and present it at the prize booth for some swag!
-
+Let our staff know that you've completed the lab so that you can collect your swag!

@@ -1,0 +1,11 @@
+CREATE EXTENSION IF NOT EXISTS vector;
+
+DROP TABLE IF EXISTS notes;
+
+CREATE TABLE notes (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    embedding VECTOR(1536),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
